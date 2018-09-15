@@ -1,4 +1,4 @@
-Joy from dance - Google Cloud Engine experiments
+Joy from dance - Google Cloud Engine experiments - project has been shut down
 =========
 
 Interesting parts:
