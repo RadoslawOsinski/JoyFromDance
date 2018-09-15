@@ -1,0 +1,222 @@
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'java-library'
+apply plugin: 'base'
+apply plugin: 'jacoco'
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+Properties versions = new Properties()
+versions.load(new FileInputStream(rootProject.projectDir.path + "/versions.properties"))
+
+version = versions.project_version
+group = "dance.joyfrom"
+ext.moduleName = 'dance.joyfrom.rest'
+compileJava.options.encoding = 'UTF-8'
+
+configurations {
+    tests
+}
+
+dependencies {
+    api project(':joyFromDance_repository') //todo !?
+    implementation project(':joyFromDance_services')
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: versions.spring_boot
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.spring_boot
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp', version: versions.springCloudGcp
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter-trace', version: versions.springCloudGcpStarterTrace
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-sleuth-core', version: versions.springCloudSleuth
+    runtime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: versions.spring_boot
+
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-tx', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-core', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-beans', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-context', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-web', version: versions.spring  //dla CommonsMultipartFile
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.spring_security
+    implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.spring_security
+    implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.spring_security
+    implementation group: 'com.hazelcast', name: 'hazelcast', version: versions.hazelcast
+    implementation group: 'com.hazelcast', name: 'hazelcast-spring', version: versions.hazelcast
+    implementation group: 'com.hazelcast', name: 'hazelcast-hibernate52', version: versions.hazelcast_hibernate52
+    implementation group: 'com.hazelcast', name: 'hazelcast-kubernetes', version: versions.hazelcast_kubernetes
+    implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: versions.hibernate_validator
+    implementation group: 'io.swagger', name: 'swagger-annotations', version: versions.swagger_annotations
+    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: versions.javax_annotation_api
+    implementation group: 'javax.validation', name: 'validation-api', version: versions.javax_validation_api
+    implementation group: 'javax.transaction', name: 'javax.transaction-api', version: versions.transaction_api
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: versions.jackson_datatype_jsr310
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson_datatype_jsr310
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: versions.jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servlet_api
+    implementation group: 'javax.json', name: 'javax.json-api', version: versions.json_api
+    implementation group: 'org.glassfish', name: 'javax.json', version: versions.javax_json
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commons_lang3
+    implementation group: 'io.micrometer', name: 'micrometer-core', version: versions.micrometer
+    implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: versions.micrometer
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit5
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: versions.junit5_platform
+    testImplementation group: 'org.springframework', name: 'spring-test', version: versions.spring
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: versions.json_path
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.json_path
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: versions.mockito
+
+    /*
+
+    implementation project(':joyFromDance_rest')
+    runtime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: versions.spring_boot
+    implementation group: 'javax.servlet.jsp', name: 'jsp-api', version: versions.jsp_api
+    implementation group: 'javax.servlet', name: 'javax.servlet-api', version: versions.servlet_api
+    implementation group: 'javax.mail', name: 'mail', version: versions.mail //provided for wildfly
+    implementation group: 'javax.activation', name: 'activation', version: versions.activation //provided for wildfly
+    implementation group: 'javax.mail', name: 'javax.mail-api', version: versions.mail_api
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-tx', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-core', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-beans', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-expression', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-context', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-aop', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-jms', version: versions.spring
+    implementation group: 'org.hibernate', name: 'hibernate-validator', version: versions.hibernate_validator
+
+    providedRuntime 'org.apache.tomcat.embed:tomcat-embed-jasper'
+
+//    implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.swagger
+//    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.swagger
+    implementation group: 'javax.ejb', name: 'ejb-api', version: versions.javax_ejb
+    implementation group: 'javax.servlet.jsp.jstl', name: 'jstl-api', version: versions.jstl
+    implementation group: 'javax.servlet', name: 'jstl', version: versions.jstl
+    implementation group: 'javax.resource', name: 'javax.resource-api', version: versions.javax_resources
+    implementation group: 'commons-logging', name: 'commons-logging', version: versions.commons_logging
+    implementation group: 'commons-io', name: 'commons-io', version: versions.commons_io
+    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: versions.commons_fileupload
+    implementation group: 'commons-dbcp', name: 'commons-dbcp', version: versions.commons_dbcp
+    implementation group: 'aopalliance', name: 'aopalliance', version: versions.aop_alliance
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: versions.commons_beanutils
+    implementation group: 'commons-collections', name: 'commons-collections', version: versions.commons_collections
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commons_lang3
+    implementation group: 'commons-pool', name: 'commons-pool', version: versions.commons_pool
+    implementation group: 'net.sf.ezmorph', name: 'ezmorph', version: versions.ezomorph
+    implementation group: 'javax.json', name:'javax.json-api', version: versions.json_api
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: versions.jwt
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit5
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: versions.junit5_platform
+    testImplementation group: 'org.springframework', name: 'spring-test', version: versions.spring
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: versions.json_path
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.json_path
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: versions.mockito
+     */
+}
+
+def gitCommitHash = "git rev-parse HEAD".execute().text.trim()
+def gitLocalBranchName = "git rev-parse --abbrev-ref HEAD".execute().text.trim()
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    options.compilerArgs += [
+        "--module-path", classpath.asPath
+    ]
+}
+
+springBoot {
+    mainClassName = 'dance.joyfrom.RestApplication'
+    buildInfo {
+        properties {
+            additional = [
+                'Main-Class': 'dance.joyfrom.RestApplication',
+                'Automatic-Module-Name': moduleName,
+                'Specification-Title': project.name,
+                'Specification-Version': version,
+                'build-number': System.getenv().BUILD_NUMBER == null ? 'local build' : System.getenv().BUILD_NUMBER,
+                'build-id': System.getenv().BUILD_ID == null ? 'local build' : System.getenv().BUILD_ID,
+                'Build-Time': ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+                'Build-Url': System.getenv().BUILD_URL == null ? 'local build' : System.getenv().BUILD_URL,
+                'scm-version': gitCommitHash == null ? 'local build' : gitCommitHash,
+                'Build-Tag': System.getenv().BUILD_TAG == null ? 'local build' : System.getenv().BUILD_TAG,
+                'Jenkins-Url': System.getenv().JENKINS_URL == null ? 'local build' : System.getenv().JENKINS_URL,
+                'Build-Workspace': System.getenv().WORKSPACE == null ? 'local build' : System.getenv().WORKSPACE,
+                'Git-Url': System.getenv().GIT_URL == null ? 'local build' : System.getenv().GIT_URL,
+                'Git-Branch': System.getenv().GIT_BRANCH == null ? 'local build from: ' + gitLocalBranchName : System.getenv().GIT_BRANCH
+            ]
+        }
+    }
+}
+
+war {
+    enabled = false
+}
+
+war.archiveName = "JOY_FROM_DANCE_REST.war"
+war {
+    inputs.property("moduleName", moduleName)
+    manifest {
+        attributes(
+            'Main-Class': 'dance.joyfrom.RestApplication',
+            'Automatic-Module-Name': moduleName,
+            'Specification-Title': project.name,
+            'Specification-Version': version,
+            'build-number': System.getenv().BUILD_NUMBER == null ? 'local build' : System.getenv().BUILD_NUMBER,
+            'build-id': System.getenv().BUILD_ID == null ? 'local build' : System.getenv().BUILD_ID,
+            'Build-Time': ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+            'Build-Url': System.getenv().BUILD_URL == null ? 'local build' : System.getenv().BUILD_URL,
+            'scm-version': gitCommitHash == null ? 'local build' : gitCommitHash,
+            'Build-Tag': System.getenv().BUILD_TAG == null ? 'local build' : System.getenv().BUILD_TAG,
+            'Jenkins-Url': System.getenv().JENKINS_URL == null ? 'local build' : System.getenv().JENKINS_URL,
+            'Build-Workspace': System.getenv().WORKSPACE == null ? 'local build' : System.getenv().WORKSPACE,
+            'Git-Url': System.getenv().GIT_URL == null ? 'local build' : System.getenv().GIT_URL,
+            'Git-Branch': System.getenv().GIT_BRANCH == null ? 'local build' : System.getenv().GIT_BRANCH
+        )
+    }
+}
+
+task integration_tests_local(type: Test) {
+    systemProperty "spring.profiles.test-groups", "integration-tests-local"
+    systemProperty "spring.profiles.active", "tomcat";
+    systemProperty "test-groups", "integration-tests-local";
+    systemProperty "test-groups", "integration-tests-local";
+}
+
+jacoco {
+    toolVersion = versions.jacoco
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.setDestination(new File("${buildDir}/reports/coverage"))
+    }
+    executionData = files('build/jacoco/test.exec', 'build/jacoco/integration_tests_local.exec')
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", 'joyFromDance_rest'
+        property "sonar.projectName", 'joyFromDance_rest'
+        property "sonar.sources", 'src/main'
+        property "sonar.tests", 'src/test'
+        property "sonar.sourceEncoding", 'UTF-8'
+    }
+}
+
+bootRun {
+    jvmArgs = ["--add-modules=java.xml.bind"]
+    args = ["--spring.profiles.active=dev"]
+}

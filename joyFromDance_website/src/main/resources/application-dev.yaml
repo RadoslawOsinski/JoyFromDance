@@ -1,0 +1,9 @@
+server.port: 8080
+management:
+    server.port: 8980
+
+joy.from.dance.rest.url: http://localhost:8081
+joy.from.dance.website:
+    security.ssl.redirect.encforce: false
+    google.api.key: ''
+    gtag: ''

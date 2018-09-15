@@ -1,0 +1,101 @@
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    repositories {
+        mavenLocal();
+        mavenCentral();
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'java-library'
+apply plugin: 'base'
+apply plugin: 'jacoco'
+
+Properties versions = new Properties()
+versions.load(new FileInputStream(rootProject.projectDir.path + "/versions.properties"))
+
+version = versions.project_version
+group = "dance.joyfrom"
+ext.moduleName = 'dance.joyfrom.services'
+compileJava.options.encoding = 'UTF-8'
+
+dependencies {
+//    api project(':joyFromDance_repository')
+    implementation project(':joyFromDance_repository')
+    implementation group: 'org.springframework', name: 'spring-webmvc', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-tx', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-core', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-beans', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-context', version: versions.spring
+    implementation group: 'org.springframework', name: 'spring-web', version: versions.spring  //dla CommonsMultipartFile
+    implementation group: 'javax.ejb', name: 'ejb-api', version: versions.javax_ejb
+    implementation group: 'javax.annotation', name: 'javax.annotation-api', version: versions.javax_annotation_api
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commons_lang3
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: versions.commons_collections4
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: versions.modelmapper
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit5
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: versions.junit5_platform
+    testImplementation group: 'org.springframework', name: 'spring-test', version: versions.spring
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: versions.json_path
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.json_path
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: versions.mockito
+}
+
+def gitCommitHash = "git rev-parse HEAD".execute().text.trim();
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    options.compilerArgs += [
+        "--module-path", classpath.asPath
+    ]
+}
+
+jar.archiveName = "JOY_FROM_DANCE_SERVICES-" + version + ".jar";
+jar {
+    inputs.property("moduleName", moduleName)
+    manifest {
+        attributes(
+            'Automatic-Module-Name': moduleName,
+            'Specification-Title': project.name,
+            'Specification-Version': version,
+            'build-number': System.getenv().BUILD_NUMBER == null ? 'local build' : System.getenv().BUILD_NUMBER,
+            'build-id': System.getenv().BUILD_ID == null ? 'local build' : System.getenv().BUILD_ID,
+            'Build-Time': ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+            'Build-Url': System.getenv().BUILD_URL == null ? 'local build' : System.getenv().BUILD_URL,
+            'scm-version': gitCommitHash == null ? 'local build' : gitCommitHash,
+            'Build-Tag': System.getenv().BUILD_TAG == null ? 'local build' : System.getenv().BUILD_TAG,
+            'Jenkins-Url': System.getenv().JENKINS_URL == null ? 'local build' : System.getenv().JENKINS_URL,
+            'Build-Workspace': System.getenv().WORKSPACE == null ? 'local build' : System.getenv().WORKSPACE,
+            'Git-Url': System.getenv().GIT_URL == null ? 'local build' : System.getenv().GIT_URL,
+            'Git-Branch': System.getenv().GIT_BRANCH == null ? 'local build' : System.getenv().GIT_BRANCH
+        )
+    }
+}
+
+jacoco {
+    toolVersion = versions.jacoco
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.setDestination(new File("${buildDir}/reports/coverage"))
+    }
+    executionData = files('build/jacoco/test.exec', 'build/jacoco/integration_tests_local.exec')
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", 'joyFromDance_services'
+        property "sonar.projectName", 'joyFromDance_services'
+        property "sonar.sources", 'src/main'
+        property "sonar.tests", 'src/test'
+        property "sonar.sourceEncoding", 'UTF-8'
+    }
+}

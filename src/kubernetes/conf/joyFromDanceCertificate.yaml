@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+    name: joyfrom-dance-tls
+    namespace: joy-from-dance
+spec:
+    secretName: joyfrom-dance-tls
+    issuerRef:
+        name: letsencrypt-prod
+        kind: ClusterIssuer
+    commonName: joyfrom.dance
+    dnsNames:
+    - joyfrom.dance
+    acme:
+        config:
+        - http01:
+              ingress: joy-from-dance-website-ingress
+          domains:
+          - joyfrom.dance

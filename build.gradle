@@ -1,0 +1,82 @@
+//in root project configuration
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url "https://artifacts.alfresco.com/nexus/content/repositories/public/"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.boxfuse.client:flyway-release:5.0.2'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2'
+        classpath 'org.owasp:dependency-check-gradle:3.3.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.20.0'
+    }
+}
+buildscript {
+    ext {
+        springBootVersion = '2.0.3.RELEASE'
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+//        classpath "net.ltgt.gradle:gradle-apt-plugin:0.15"
+    }
+}
+
+Properties versions = new Properties()
+versions.load(new FileInputStream(rootProject.projectDir.path + "/versions.properties"))
+
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'org.springframework.boot'
+
+subprojects {
+    apply plugin: 'com.github.ben-manes.versions'
+    apply plugin: 'org.sonarqube'
+    apply plugin: 'org.owasp.dependencycheck'
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = 10
+        targetCompatibility = 10
+        options.encoding = 'UTF-8'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
+            url "https://artifacts.alfresco.com/nexus/content/repositories/public/"
+        }
+        maven {
+            url "http://repo.spring.io/milestone/"
+        }
+    }
+
+//    sonarqube {
+//        properties {
+//            property 'sonar.host.url', System.properties['joyfromdance.sonar.host.url']
+//            property 'sonar.sourceEncoding', 'UTF-8'
+//            property 'sonar.login', System.properties['joyfromdance.sonar.login']
+//            property 'sonar.password', System.properties['joyfromdance.sonar.password']
+//            property 'sonar.jacoco.itReportPath', 'build/jacoco/integration_tests_local.exec'
+//            property 'sonar.jacoco.reportPath', 'build/jacoco/test.exec'
+//
+//            //for code coverage in integration tests
+//            property 'spring.profiles.test-groups', 'integration-tests-local'
+//            property 'spring.profiles.active', 'tomcat'
+//        }
+//    }
+
+    dependencies {
+//        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit5
+    }
+}

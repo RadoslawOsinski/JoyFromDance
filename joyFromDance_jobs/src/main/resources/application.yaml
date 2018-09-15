@@ -1,0 +1,4 @@
+spring:
+    application.name: 'JoyFromDanceJobs'
+    banner.location: classpath:/JoyFromDanceJobsBanner.txt
+    jpa.properties.hibernate.temp.use_jdbc_metadata_defaults: false

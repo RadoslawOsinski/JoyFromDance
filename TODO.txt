@@ -1,0 +1,29 @@
+============TOTALNA DUPA ==============================
+============KOMERCJALIZACJA============================
+- walidacje jak w:
+https://lit-element-dot-polymer-shop.appspot.com/checkout
+https://polymer.github.io/pwa-starter-kit/sample-apps/
+- logowanie jak w:
+https://books-pwakit.appspot.com/explore?q=
+- instrukcje dla administratorów szkoły
+- link do łatwego założenia szkoły
+- link do łatwego publikowania grafiku zajęć
+
+============Późniejsze prace===========================
+- integracja z bluemedia: https://bluemedia.pl/oferta/platnosci/platnosci-online ?
+- wdrożyć powtarzalne lekcje na podstawie: http://www.vertabelo.com/blog/technical-articles/again-and-again-managing-recurring-events-in-a-data-model
+- wit.ai - chat bot ?!
+- pokaz aniołom biznesu?
+- https://developers.google.com/search/docs/data-types/courses?hl=pl
+- https://developers.google.com/search/docs/data-types/events?hl=pl
+- https://developers.google.com/search/docs/data-types/local-business?hl=pl
+- https://developers.google.com/search/docs/data-types/social-profile?hl=pl
+- http://schema.org/DanceEvent
+- obsługa supportów ?
+- ostrzeżenia o braku pary dla admina szkoły
+- informowanie o braku obecności
+- informowanie o braku nauczyciela do zbliżającej się lekcji
+- wysyłka zaproszeń do korzystania z strony przez administratorów strony
+- informowanie o zamknięciu kursu przez admina szkoły
+- tutorial lub wideo z zarządzania szkołą?
+- internacjonalizacja?

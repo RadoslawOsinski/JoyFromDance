@@ -1,0 +1,3 @@
+spring:
+    application.name: 'JoyFromDanceDelivery'
+    banner.location: classpath:/JoyFromDanceDeliveryBanner.txt

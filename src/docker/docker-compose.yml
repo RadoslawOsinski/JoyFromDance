@@ -1,0 +1,54 @@
+version: '3'
+services:
+    joyFromDancePostgresql:
+        restart: always
+        image: postgres:10.4-alpine
+        ports:
+        - "5432:5432"
+        environment:
+        - POSTGRES_USER=${POSTGRESQL_DB_USER}
+        - POSTGRES_PASSWORD=${POSTGRESQL_DB_PASS}
+        - POSTGRES_DB=${POSTGRESQL_DB_NAME}
+        volumes:
+        - ${POSTGRESQL_PERSISTENT_VOLUME_PATH}:/var/lib/postgresql
+    joyFromDanceDelivery:
+        build:
+            context: ../../joyFromDance_delivery
+            dockerfile: src/docker/Dockerfile
+        image: "${REGISTRY}/${GROUP}/joy-from-dance-delivery"
+        ports:
+        - "8081:8080"
+        environment:
+        - SPRING_PROFILES_ACTIVE="compose"
+    joyFromDanceJobs:
+        build:
+            context: ../../joyFromDance_jobs
+            dockerfile: src/docker/Dockerfile
+        image: "${REGISTRY}/${GROUP}/joy-from-dance-jobs"
+        ports:
+        - "8082:8080"
+        environment:
+        - SPRING_PROFILES_ACTIVE="compose"
+    joyFromDanceRest:
+        build:
+            context: ../../joyFromDance_rest
+            dockerfile: src/docker/Dockerfile
+        image: "${REGISTRY}/${GROUP}/joy-from-dance-rest"
+        ports:
+        - "8083:8080"
+        environment:
+        - SPRING_PROFILES_ACTIVE="compose"
+        - JOY_FROM_DANCE_DATA_SOURCE_URL=jdbc:postgresql://joyFromDancePostgresql:5432/${POSTGRESQL_DB_NAME}
+        - JOY_FROM_DANCE_DATA_SOURCE_USERNAME=${POSTGRESQL_DB_USER}
+        - JOY_FROM_DANCE_DATA_SOURCE_PASSWORD=${POSTGRESQL_DB_PASS}
+        - JOY_FROM_DANCE_HAZELCAST_INSTANCE_NAME=${WEB_HAZELCAST_INSTANCE_NAME}
+        - JOY_FROM_DANCE_HAZELCAST_PASSWORD=${WEB_HAZELCAST_PASSWORD}
+    joyFromDanceWebsite:
+        build:
+            context: ../../joyFromDance_website
+            dockerfile: src/docker/Dockerfile
+        image: "${REGISTRY}/${GROUP}/joy-from-dance-website"
+        ports:
+        - "8084:8080"
+        environment:
+        - SPRING_PROFILES_ACTIVE="compose"

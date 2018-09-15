@@ -1,0 +1,39 @@
+spring:
+    application.name: 'JoyFromDanceRest'
+    banner.location: classpath:/JoyFromDanceRestBanner.txt
+    sleuth.sampler.probability: 1
+    sleuth.web.skipPattern: '(^cleanup.*|.+favicon.*|/)'
+    cloud:
+        gcp:
+            credentials.location: 'classpath:/joy-from-dance-rest-service-account.json'
+            trace.enabled: false
+            project-id: 'projectjoyfromdance'
+
+hibernate.jdbc.lob.non_contextual_creation: true
+
+management:
+    server.port: 8981
+    endpoints.web.exposure.include: health,info,env,metrics,prometheus,flyway,threaddump,heapdump,loggers,readiness
+    metrics.export.prometheus.enabled: true
+    endpoint:
+        info:
+            enabled: true
+        env:
+            enabled: true
+        metrics:
+            enabled: true
+        prometheus:
+            enabled: true
+        flyway:
+            enabled: true
+        threaddump:
+            enabled: true
+        heapdump:
+            enabled: true
+        loggers:
+            enabled: true
+
+joy.from.dance.website:
+    cors.allowed.origins:
+        - 'http://joyfrom.dance'
+        - 'https://joyfrom.dance'

@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: joy-from-dance-website-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: joy-from-dance-website-ip
+    ingress.kubernetes.io/enable-cors: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: joy-from-dance-website
+  namespace: joy-from-dance
+spec:
+  rules:
+    - host: joyfrom.dance
+      http:
+        paths:
+        - backend:
+            serviceName: joy-from-dance-website-service
+            servicePort: 8080
+    - host: rest.joyfrom.dance
+      http:
+        paths:
+        - backend:
+            serviceName: joy-from-dance-rest-service
+            servicePort: 8080
+#    - host: sonar.joyfrom.dance
+#      http:
+#        paths:
+#        - backend:
+#            serviceName: sonar-service
+#            servicePort: 9000
+  tls:
+    - hosts:
+      - joyfrom.dance
+      secretName: joyfrom-dance-tls
+    - hosts:
+      - rest.joyfrom.dance
+      secretName: joyfrom-dance-rest-tls
+#    - hosts:
+#      - sonar.joyfrom.dance
+#      secretName: joyfrom-dance-sonar-tls

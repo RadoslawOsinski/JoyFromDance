@@ -1,0 +1,81 @@
+stages:
+- build
+- test
+#- qa
+- release
+
+variables:
+    # When using dind service we need to instruct docker, to talk with the
+    # daemon started inside of the service. The daemon is available with
+    # a network connection instead of the default /var/run/docker.sock socket.
+    #
+    # The 'docker' hostname is the alias of the service container as described at
+    # https://docs.gitlab.com/ee/ci/docker/using_docker_images.html#accessing-the-services
+    #
+    # Note that if you're using Kubernetes executor, the variable should be set to
+    # tcp://localhost:2375 because of how Kubernetes executor connects services
+    # to the job container
+    DOCKER_HOST: tcp://docker:2375/
+    # When using dind, it's wise to use the overlayfs driver for
+    # improved performance.
+    DOCKER_DRIVER: overlay2
+
+services:
+- docker:dind
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+#  - echo "$DOCKER_AUTH_CONFIG" >> "$HOME/.docker/config.json"
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+build:
+  image: gradle:jdk10
+  stage: build
+  script:
+    - ./gradlew --no-daemon build
+  artifacts:
+    paths:
+      - joyFromDance_delivery/build/libs/*.war
+      - joyFromDance_jobs/build/libs/*.war
+      - joyFromDance_rest/build/libs/*.war
+      - joyFromDance_website/build/libs/*.war
+    expire_in: 1 week
+
+test:
+  image: gradle:jdk10
+  stage: test
+  script:
+    - ./gradlew --no-daemon test
+
+#qa:
+#  image: gradle:jdk8
+#  stage: qa
+#  script:
+#    - ./gradlew sonarqube -Dsonar.host.url=http://sonar.joyfrom.dance -Dsonar.login=84d972cca96ea094ea7f64a87389aeb4d586393d
+
+release:
+  image: google/cloud-sdk
+  stage: release
+  script:
+    - env
+    - gcloud config set project projectjoyfromdance
+    - gcloud auth activate-service-account --key-file=$CI_PROJECT_DIR/src/kubernetes/joy-from-dance-ci-account-key.json
+    - gcloud auth configure-docker
+    - docker build -t "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-delivery:$CI_COMMIT_TAG" -f "$CI_PROJECT_DIR/joyFromDance_delivery/src/docker/Dockerfile" joyFromDance_delivery
+    - docker build -t "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-jobs:$CI_COMMIT_TAG" -f "$CI_PROJECT_DIR/joyFromDance_jobs/src/docker/Dockerfile" joyFromDance_jobs
+    - docker build -t "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-rest:$CI_COMMIT_TAG" -f "$CI_PROJECT_DIR/joyFromDance_rest/src/docker/Dockerfile" joyFromDance_rest
+    - docker build -t "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-website:$CI_COMMIT_TAG" -f "$CI_PROJECT_DIR/joyFromDance_website/src/docker/Dockerfile" joyFromDance_website
+    - docker push "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-delivery:$CI_COMMIT_TAG"
+    - docker push "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-jobs:$CI_COMMIT_TAG"
+    - docker push "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-rest:$CI_COMMIT_TAG"
+    - docker push "gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-website:$CI_COMMIT_TAG"
+    - gcloud container clusters get-credentials joyfromdancek8s --zone europe-west3-a --project projectjoyfromdance
+    - kubectl apply -f $CI_PROJECT_DIR/src/kubernetes/conf/joyFromDanceServices.yaml
+  only:
+    - tags
+#    - master
+  when: manual

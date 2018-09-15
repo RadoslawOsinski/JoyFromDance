@@ -1,0 +1,7 @@
+rootProject.name = 'JoyFromDance'
+include "joyFromDance_repository"
+include "joyFromDance_delivery"
+include "joyFromDance_services"
+include "joyFromDance_jobs"
+include "joyFromDance_rest"
+include "joyFromDance_website"

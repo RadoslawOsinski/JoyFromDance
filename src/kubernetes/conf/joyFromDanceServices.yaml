@@ -1,0 +1,171 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: joy-from-dance-rest
+  namespace: joy-from-dance
+  labels:
+    app: joy-from-dance-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: joy-from-dance-rest
+  template:
+    metadata:
+      labels:
+        app: joy-from-dance-rest
+        env: joy-from-dance-rest
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/actuator/prometheus'
+        prometheus.io/port: '8981'
+    spec:
+      containers:
+      - name: joy-from-dance-rest
+        image: gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-rest:1.0.7-release
+        ports:
+        - containerPort: 8080
+        - containerPort: 8981
+        env:
+        - name: RELEASE_ENVIRONMENT
+          value: prod
+        - name: JOY_FROM_DANCE_DATA_SOURCE_URL
+          value: jdbc:postgresql://127.0.0.1:3306/joy-from-dance-instance-prod
+        - name: JOY_FROM_DANCE_DATA_SOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: username
+        - name: JOY_FROM_DANCE_DATA_SOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: cloudsql-db-credentials
+              key: password
+        - name: JOY_FROM_DANCE_HAZELCAST_INSTANCE_NAME
+          value: hazzpass
+        - name: JOY_FROM_DANCE_HAZELCAST_PASSWORD
+          value: WEB_HAZELCAST_PASSWORD
+        - name: DEBUG
+          value: 'false'
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8981
+          initialDelaySeconds: 180
+          periodSeconds: 3
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/readiness
+            port: 8981
+          initialDelaySeconds: 180
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 0.25
+            memory: 256Mi
+          limits:
+            cpu: 0.5
+            memory: 512Mi
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/cloud_sql_proxy",
+                  "-instances=projectjoyfromdance:europe-west3:joy-from-dance=tcp:3306",
+                  "-credential_file=/secrets/cloudsql/credentials.json"]
+        volumeMounts:
+        - name: cloudsql-instance-credentials
+          mountPath: "/secrets/cloudsql"
+          readOnly: true
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: joy-from-dance-website
+    namespace: joy-from-dance
+    labels:
+        app: joy-from-dance-website
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: joy-from-dance-website
+    template:
+        metadata:
+            labels:
+                app: joy-from-dance-website
+                env: joy-from-dance-website
+            annotations:
+                prometheus.io/scrape: 'true'
+                prometheus.io/path: '/actuator/prometheus'
+                prometheus.io/port: '8981'
+        spec:
+            containers:
+            - name: joy-from-dance-website
+              image: gcr.io/projectjoyfromdance/joy-from-dance/joy-from-dance-website:1.0.5-release
+              ports:
+              - containerPort: 8080
+              env:
+              - name: RELEASE_ENVIRONMENT
+                value: prod
+              - name: JOY_FROM_DANCE_WEBSITE_GOOGLE_API_KEY
+                value: 'AIza...cut...wRU'
+              livenessProbe:
+                  httpGet:
+                      path: /
+                      port: 8080
+                  initialDelaySeconds: 180
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+              readinessProbe:
+                  httpGet:
+                      path: /
+                      port: 8080
+                  initialDelaySeconds: 180
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+              resources:
+                  requests:
+                      cpu: 0.25
+                      memory: 256Mi
+                  limits:
+                      cpu: 0.5
+                      memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: joy-from-dance-rest-service
+  namespace: joy-from-dance
+  labels:
+    app: joy-from-dance-rest
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: 'http-port'
+  type: NodePort
+  selector:
+    app: joy-from-dance-rest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: joy-from-dance-website-service
+  namespace: joy-from-dance
+  labels:
+    app: joy-from-dance-website
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: 'http-port'
+  type: NodePort
+  selector:
+    app: joy-from-dance-website

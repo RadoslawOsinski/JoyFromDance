@@ -1,0 +1,35 @@
+{
+  "name": "joy-from-dance",
+  "version": "0.8.0",
+  "contributors": [
+    "Radosław Osiński"
+  ],
+  "license": "BSD-3-Clause",
+  "repository": "none",
+  "scripts": {
+    "sass": "node-sass --include-path node_modules src/main/webapp/resources-joy-from-dance/css/global_styles.scss src/main/webapp/resources-joy-from-dance/css/global_styles.css"
+  },
+  "dependencies": {
+    "@material/animation": "^0.34.0",
+    "@material/button": "^0.36.1",
+    "@material/chips": "^0.37.0",
+    "@material/drawer": "^0.36.1",
+    "@material/layout-grid": "^0.34.0",
+    "@material/list": "^0.36.0",
+    "@material/menu": "^0.36.1",
+    "@material/ripple": "^0.36.0",
+    "@material/textfield": "^0.36.1",
+    "@material/theme": "^0.35.0",
+    "@material/top-app-bar": "^0.36.1",
+    "@polymer/app-layout": "^3.0.0-pre.19",
+    "@polymer/lit-element": "^0.5.2",
+    "@webcomponents/webcomponentsjs": "^2.0.2",
+    "material-design-icons": "^3.0.1",
+    "node-sass": "^4.9.2",
+    "pwa-helpers": "^0.8.3",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "reselect": "^3.0.1"
+  },
+  "devDependencies": {}
+}

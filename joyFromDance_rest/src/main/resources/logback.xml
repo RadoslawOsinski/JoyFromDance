@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <jmxConfigurator/>
+
+    <property name="log-path" value="${logbackLogsDir}"/>
+
+    <!--<appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+        <!--<file>${log-path}/joyFromDanceRest.log</file>-->
+        <!--<encoder>-->
+            <!--<pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>-->
+        <!--</encoder>-->
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+            <!--<fileNamePattern>${log-path}/joyFromDanceRest.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>-->
+            <!--<maxFileSize>1000MB</maxFileSize>-->
+            <!--<maxHistory>60</maxHistory>-->
+            <!--<totalSizeCap>20GB</totalSizeCap>-->
+        <!--</rollingPolicy>-->
+    <!--</appender>-->
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.hazelcast" level="INFO"/>
+
+    <!--hibernate debugging-->
+    <!--<logger name="org.hibernate.SQL" level="DEBUG"/>-->
+    <!--<logger name="org.hibernate.type" level="TRACE"/>-->
+
+    <logger name="dance.joyfrom" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+
+    <root level="INFO">
+        <!--<appender-ref ref="LOG_FILE"/>-->
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

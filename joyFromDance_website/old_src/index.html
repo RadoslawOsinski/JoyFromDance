@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="PWA Starter Kit">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Joy from dance</title>
+    <meta name="description" content="Joy from dance, Dancing classes management, dancer meetup, dancing school management">
+
+    <!--
+      The `<base>` tag below is present to support two advanced deployment options:
+      1) Differential serving. 2) Serving from a non-root path.
+
+      Instead of manually editing the `<base>` tag yourself, you should generally either:
+      a) Add a `basePath` property to the build configuration in your `polymer.json`.
+      b) Use the `--base-path` command-line option for `polymer build`.
+    -->
+    <base href="/">
+
+    <link rel="icon" href="images/favicon.ico">
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- See https://goo.gl/qRE0vM -->
+    <meta name="theme-color" content="#3f51b5">
+
+    <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Joy from dance">
+
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="My App">
+
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="images/manifest/icon-48x48.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/manifest/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="images/manifest/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/manifest/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="images/manifest/icon-192x192.png">
+
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="images/manifest/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#3f51b5">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- Default twitter cards -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@username">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Joy from dance">
+    <meta property="og:image" content="images/manifest/icon-144x144.png" />
+
+    <script>
+      // Load and register pre-caching Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('service-worker.js', {
+            scope: '/',
+          });
+        });
+      }
+
+      // Redux assumes `process.env.NODE_ENV` exists in the ES module build.
+      // https://github.com/reactjs/redux/issues/2907
+      window.process = { env: { NODE_ENV: 'production' } };
+    </script>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link rel="stylesheet" href="./src/css/global_styles.css"/>
+  </head>
+  <body>
+  <header id="demo-top-app-bar" class="mdc-top-app-bar mdc-top-app-bar--fixed-scrolled" style="top: 0px;">
+      <div class="mdc-top-app-bar__row">
+          <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+              <a href="#" class="material-icons mdc-top-app-bar__navigation-icon mdc-ripple-upgraded--unbounded mdc-ripple-upgraded" style="--mdc-ripple-fg-size:28.8px; --mdc-ripple-fg-scale:1.66667; --mdc-ripple-left:10px; --mdc-ripple-top:10px;">menu</a>
+              <span class="mdc-top-app-bar__title">Joy from dance</span>
+          </section>
+          <section id="iconSection" class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+              <a href="/login" id="loginButton">Login</a>
+              <a href="/" class="material-icons mdc-top-app-bar__action-item mdc-ripple-upgraded--unbounded mdc-ripple-upgraded" aria-label="Alarms" alt="Alarms" style="--mdc-ripple-fg-size:28.8px; --mdc-ripple-fg-scale:1.66667; --mdc-ripple-left:10px; --mdc-ripple-top:10px;">alarm_on</a>
+              <a href="/" class="material-icons mdc-top-app-bar__action-item mdc-ripple-upgraded--unbounded mdc-ripple-upgraded" aria-label="Account" alt="Account" style="--mdc-ripple-fg-size:28.8px; --mdc-ripple-fg-scale:1.66667; --mdc-ripple-left:10px; --mdc-ripple-top:10px;">account_circle</a>
+          </section>
+      </div>
+  </header>
+
+  <aside class="mdc-drawer mdc-drawer--temporary">
+      <nav class="mdc-drawer__drawer">
+          <header class="mdc-drawer__header">
+              <div class="mdc-drawer__header-content mdc-theme--on-primary mdc-theme--primary-bg">
+                    Menu
+              </div>
+          </header>
+          <nav class="mdc-drawer__content mdc-list-group">
+              <div class="mdc-list">
+                  <a href="/" class="mdc-list-item ">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">&#xE5C4;</i>Back
+                  </a>
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">dashboard</i>Dancer dashboard
+                  </a>
+                  <div class="mdc-list">
+                      <a class="mdc-list-item" href="#">
+                          <i class="material-icons mdc-list-item__graphic" aria-hidden="true">message</i>All Messages
+                      </a>
+                  </div>
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">calendar_today</i>Calendar
+                  </a>
+              </div>
+
+              <hr class="mdc-list-divider">
+              <div class="mdc-list">
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">star</i>Star
+                  </a>
+              </div>
+
+              <hr class="mdc-list-divider">
+              <div class="mdc-list">
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">meeting_room</i>Classes
+                  </a>
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">group</i>Groups
+                  </a>
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">notifications_active</i>Notifications
+                  </a>
+              </div>
+
+              <hr class="mdc-list-divider">
+              <div class="mdc-list">
+                  <a class="mdc-list-item" href="#">
+                      <i class="material-icons mdc-list-item__graphic" aria-hidden="true">account_circle</i>Account
+                  </a>
+              </div>
+          </nav>
+      </nav>
+  </aside>
+
+  <main>
+      Strona glowna!
+      <div class="container">
+          Strona glowna!
+      </div>
+
+      Strona glowna!
+      <div class="container">
+          <div id="loginForm">
+              <h1>Login form</h1>
+              <label for="userName">User name: </label>
+              <input type="text" id="userName"/>
+              <label for="password">Password: </label>
+              <input type="password" id="password"/>
+              <button type="button" id="loginButtonTest" class="mdc-button">Login</button>
+          </div>
+      </div>
+
+      <div class="container">
+      </div>
+  </main>
+
+  <footer>
+      <p>Made with &hearts; by CWSFE.</p>
+  </footer>
+
+  <!--<joy-from-dance-app appTitle="Joy from dance"></joy-from-dance-app>-->
+    <noscript>
+      Please enable JavaScript to view this website.
+    </noscript>
+    <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+    <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <!-- Built with love using PWA Starter Kit -->
+    <script type="module" src="src/components/joy-from-dance-app.js" crossorigin></script>
+  <script type="module">
+      import {MDCTemporaryDrawer} from '@material/drawer';
+      import {MDCTopAppBar} from '@material/top-app-bar';
+      import { store } from './src/store.js';
+
+      var appBarEl = document.getElementById('demo-top-app-bar');
+        // var appBar = mdc.topAppBar.MDCTopAppBar.attachTo(appBarEl);
+
+        new MDCTopAppBar(appBarEl);
+
+        var drawerEl = document.querySelector('.mdc-drawer');
+        var drawer = new MDCTemporaryDrawer(drawerEl);
+
+        appBarEl.addEventListener('MDCTopAppBar:nav', function() {
+            drawer.open = true;
+        });
+
+        const loadPage = (page) => async () => {
+          // If the page is invalid, set to 404. The is also a good spot to check
+          // other location things like sub-path or query params.
+          if (['main', 'login', 'view2', 'view3', 'contact'].indexOf(page) === -1) {
+              page = 'view404';
+          }
+
+          // dispatch(updatePage(page));
+
+          switch(page) {
+              case 'main':
+                  await import('./src/components/main/main-view.js');
+                  // Put code here that you want it to run every time when
+                  // navigate to view1 page and my-view1.js is loaded
+                  break;
+              case 'view2':
+                  await import('./src/components/my-view2.js');
+                  break;
+              case 'view3':
+                  await import('./src/components/my-view3.js');
+                  break;
+              case 'contact':
+                  await import('./src/components/contact/contact-view.js');
+                  break;
+              case 'login':
+                  await import('./src/components/login/login-view.js');
+                  break;
+              default:
+                  await import('./src/components/errors/view404.js');
+          }
+      };
+
+      document.getElementById('loginButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('loginButton click');
+            // store.state.joyFromDanceApp.page = '/login';
+            // loadPage(store.state.joyFromDanceApp.page);
+            loadPage('/login');
+            // store.dispatch(updateDrawerState(true));
+        });
+
+
+      document.getElementById('loginButtonTest').addEventListener('click', function (e) {
+          e.preventDefault();
+          let url = 'http://localhost:8080/login';
+          // let token = document.querySelector("meta[name='_csrf']").content;
+          // let csrfHeader = document.querySelector("meta[name='_csrf_header']").content;
+          let headers = new Headers({
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Accept-Charset': 'UTF-8'
+          });
+          // headers.append(csrfHeader, token);
+          fetch(url, {
+              method: 'post',
+              body: JSON.stringify({
+                  login: document.getElementById('userName').value,
+                  password: document.getElementById('password').value
+              }),
+              headers: headers,
+              credentials: 'include'
+          }).catch(function () {
+              console.log('error');
+          }).then(function (response) {
+              console.log('login resp');
+              if (200 === response.status) {
+                  console.log('login 299');
+                  // self.loadPagedSchoolAccounts();
+                  // SchoolAccounts.closeAddSchoolAccountModal();
+                  // document.getElementById('addSchoolName').value = '';
+              } else {
+                  console.log('error');
+              }
+          })
+
+          // console.log('loginButton click');
+          // // store.state.joyFromDanceApp.page = '/login';
+          // // loadPage(store.state.joyFromDanceApp.page);
+          // loadPage('/login');
+          // store.dispatch(updateDrawerState(true));
+      });
+
+
+      // new MDCRipple(document.getElementById('loginButton'));
+    </script>
+  </body>
+</html>

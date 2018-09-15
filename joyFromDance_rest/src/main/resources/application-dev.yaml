@@ -1,0 +1,21 @@
+server.port: 8081
+management:
+    server.port: 8982
+
+spring.cloud.gcp.trace.enabled: false
+
+joy.from.dance:
+    data.source:
+        url: jdbc:postgresql://localhost:5432/joyFromDance
+        username: secretUser
+        password: secretPassword
+    hazelcast:
+        instance.name: joyFromDanceHazelcastInstance1
+        password: secretPassword
+        on.bare.metal: true
+        members: 127.0.0.1:5701
+    website:
+        cors.allowed.origins:
+        - 'http://localhost'
+        - 'http://joyfrom.dance'
+        - 'https://joyfrom.dance'

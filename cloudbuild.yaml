@@ -1,0 +1,22 @@
+steps:
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gradlejdk10', '-f', 'src/cloud-builders/gradlejdk10/Dockerfile', '.']
+- name: gcr.io/cloud-builders/git
+  args: ['clone', 'https://source.developers.google.com/p/$PROJECT_ID/r/JoyFromDance']
+  env: ['PROJECT_ROOT=JoyFromDance']
+- name: gradlejdk10
+  args: ['build']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-delivery:$TAG_NAME', '-f', 'joyFromDance_delivery/src/docker/Dockerfile', 'joyFromDance_delivery']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-jobs:$TAG_NAME', '-f', 'joyFromDance_jobs/src/docker/Dockerfile', 'joyFromDance_jobs']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-rest:$TAG_NAME', '-f', 'joyFromDance_rest/src/docker/Dockerfile', 'joyFromDance_rest']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-website:$TAG_NAME', '-f', 'joyFromDance_website/src/docker/Dockerfile', 'joyFromDance_website']
+images: [
+    'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-delivery:$TAG_NAME',
+    'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-jobs:$TAG_NAME',
+    'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-rest:$TAG_NAME',
+    'gcr.io/$PROJECT_ID/joy-from-dance/joy-from-dance-website:$TAG_NAME'
+]

@@ -1,0 +1,139 @@
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'java-library'
+apply plugin: 'base'
+apply plugin: 'jacoco'
+apply plugin: 'war'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+Properties versions = new Properties()
+versions.load(new FileInputStream(rootProject.projectDir.path + "/versions.properties"))
+
+version = versions.project_version
+group = "dance.joyfrom"
+ext.moduleName = 'dance.joyfrom.jobs'
+compileJava.options.encoding = 'UTF-8'
+
+configurations {
+    tests
+}
+
+dependencies {
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: versions.spring_boot
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.spring_boot
+    runtime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: versions.spring_boot
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit5
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-runner', version: versions.junit5_platform
+
+    implementation group: 'com.hazelcast', name: 'hazelcast', version: versions.hazelcast
+    implementation group: 'com.hazelcast', name: 'hazelcast-spring', version: versions.hazelcast
+    implementation group: 'com.hazelcast', name: 'hazelcast-hibernate52', version: versions.hazelcast_hibernate52
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: versions.commons_lang3
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+    api group: 'org.slf4j', name: 'slf4j-api', version: versions.slf4j
+}
+
+def gitCommitHash = "git rev-parse HEAD".execute().text.trim()
+def gitLocalBranchName = "git rev-parse --abbrev-ref HEAD".execute().text.trim()
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    options.compilerArgs += [
+        "--module-path", classpath.asPath
+    ]
+}
+
+springBoot {
+    mainClassName = 'dance.joyfrom.jobs.JobsApplication'
+    buildInfo {
+        properties {
+            additional = [
+                'Main-Class': 'dance.joyfrom.jobs.JobsApplication',
+                'Automatic-Module-Name': moduleName,
+                'Specification-Title': project.name,
+                'Specification-Version': version,
+                'build-number': System.getenv().BUILD_NUMBER == null ? 'local build' : System.getenv().BUILD_NUMBER,
+                'build-id': System.getenv().BUILD_ID == null ? 'local build' : System.getenv().BUILD_ID,
+                'Build-Time': ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+                'Build-Url': System.getenv().BUILD_URL == null ? 'local build' : System.getenv().BUILD_URL,
+                'scm-version': gitCommitHash == null ? 'local build' : gitCommitHash,
+                'Build-Tag': System.getenv().BUILD_TAG == null ? 'local build' : System.getenv().BUILD_TAG,
+                'Jenkins-Url': System.getenv().JENKINS_URL == null ? 'local build' : System.getenv().JENKINS_URL,
+                'Build-Workspace': System.getenv().WORKSPACE == null ? 'local build' : System.getenv().WORKSPACE,
+                'Git-Url': System.getenv().GIT_URL == null ? 'local build' : System.getenv().GIT_URL,
+                'Git-Branch': System.getenv().GIT_BRANCH == null ? 'local build from: ' + gitLocalBranchName : System.getenv().GIT_BRANCH
+            ]
+        }
+    }
+}
+
+war {
+    enabled = false
+}
+
+war.archiveName = "JOY_FROM_DANCE_JOBS.war"
+war {
+    inputs.property("moduleName", moduleName)
+    manifest {
+        attributes(
+            'Main-Class': 'dance.joyfrom.jobs.JobsApplication',
+            'Automatic-Module-Name': moduleName,
+            'Specification-Title': project.name,
+            'Specification-Version': version,
+            'build-number': System.getenv().BUILD_NUMBER == null ? 'local build' : System.getenv().BUILD_NUMBER,
+            'build-id': System.getenv().BUILD_ID == null ? 'local build' : System.getenv().BUILD_ID,
+            'Build-Time': ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+            'Build-Url': System.getenv().BUILD_URL == null ? 'local build' : System.getenv().BUILD_URL,
+            'scm-version': gitCommitHash == null ? 'local build' : gitCommitHash,
+            'Build-Tag': System.getenv().BUILD_TAG == null ? 'local build' : System.getenv().BUILD_TAG,
+            'Jenkins-Url': System.getenv().JENKINS_URL == null ? 'local build' : System.getenv().JENKINS_URL,
+            'Build-Workspace': System.getenv().WORKSPACE == null ? 'local build' : System.getenv().WORKSPACE,
+            'Git-Url': System.getenv().GIT_URL == null ? 'local build' : System.getenv().GIT_URL,
+            'Git-Branch': System.getenv().GIT_BRANCH == null ? 'local build from: ' + gitLocalBranchName : System.getenv().GIT_BRANCH
+        )
+    }
+}
+
+task integration_tests_local(type: Test) {
+    systemProperty "spring.profiles.test-groups", "integration-tests-local"
+    systemProperty "spring.profiles.active", "tomcat";
+    systemProperty "test-groups", "integration-tests-local";
+    systemProperty "test-groups", "integration-tests-local";
+}
+
+jacoco {
+    toolVersion = versions.jacoco
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.setDestination(new File("${buildDir}/reports/coverage"))
+    }
+    executionData = files('build/jacoco/test.exec', 'build/jacoco/integration_tests_local.exec')
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'joyFromDance_jobs'
+        property 'sonar.projectName', 'joyFromDance_jobs'
+        property 'sonar.sources', 'src/main'
+        property 'sonar.tests', 'src/test'
+        property 'sonar.sourceEncoding', 'UTF-8'
+    }
+}

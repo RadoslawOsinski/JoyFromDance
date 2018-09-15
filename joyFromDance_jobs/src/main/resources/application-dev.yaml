@@ -1,0 +1,8 @@
+joy.from.dance:
+    data.source:
+        url: 'jdbc:postgresql://localhost:5432/joyFromDance'
+        username: 'secretUser'
+        password: 'secretPassword'
+    hazelcast:
+        members: '127.0.0.1:5701'
+        password: 'secretPassword'
